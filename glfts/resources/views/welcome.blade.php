@@ -285,8 +285,12 @@
                 <div class="card">
                     <h2>Geospatial Filter</h2>
                     <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                        <input type="text" id="origin" placeholder="Origin City">
-                        <input type="text" id="destination" placeholder="Destination City">
+                        <select id="origin-select">
+                            <option value="">Any Origin...</option>
+                        </select>
+                        <select id="destination-select">
+                            <option value="">Any Destination...</option>
+                        </select>
                         <button class="btn" style="width: auto; margin-top: 0.5rem;" onclick="searchShipments()">Search</button>
                     </div>
                     <table class="results-table">
@@ -321,6 +325,7 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-portal').classList.remove('hidden');
             loadDashboard();
+            loadSearchData();
         }
         function logout() { window.location.reload(); }
 
@@ -341,8 +346,24 @@
             document.getElementById('idle-count').innerText = data.vehicles_idle;
         }
 
+        async function loadSearchData() {
+            const res = await fetch('/api/locations');
+            const data = await res.json();
+            
+            const oSelect = document.getElementById('origin-select');
+            const dSelect = document.getElementById('destination-select');
+
+            oSelect.innerHTML = '<option value="">Any Origin...</option>' + 
+                data.origins.map(o => `<option value="${o}">${o}</option>`).join('');
+            
+            dSelect.innerHTML = '<option value="">Any Destination...</option>' + 
+                data.destinations.map(d => `<option value="${d}">${d}</option>`).join('');
+        }
+
         async function searchShipments() {
-            const url = `/api/shipments?origin=${document.getElementById('origin').value}&destination=${document.getElementById('destination').value}`;
+            const o = document.getElementById('origin-select').value;
+            const d = document.getElementById('destination-select').value;
+            const url = `/api/shipments?origin=${o}&destination=${d}`;
             const res = await fetch(url);
             const data = await res.json();
             document.getElementById('shipment-tbody').innerHTML = data.map(s => `
@@ -354,11 +375,10 @@
         async function loadVehicles() {
             const select = document.getElementById('vehicle-select');
             if (select.children.length <= 1) {
-                for(let i=1; i<=10; i++) {
-                    const opt = document.createElement('option');
-                    opt.value = i; opt.text = "GLFTS Truck-00" + i;
-                    select.appendChild(opt);
-                }
+                const res = await fetch('/api/vehicles');
+                const data = await res.json();
+                select.innerHTML = '<option value="">Select Truck...</option>' + 
+                    data.map(v => `<option value="${v.id}">${v.license_plate} (${v.vin_number.substring(0,8)}...)</option>`).join('');
             }
         }
 
