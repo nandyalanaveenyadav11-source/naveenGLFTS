@@ -1,0 +1,75 @@
+name: 'Shipment Tracking'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/shipments
+    metadata:
+      custom: []
+      groupName: 'Shipment Tracking'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List Shipments'
+      description: 'Get a list of all shipments with optional geospatial filtering by origin and destination.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      origin:
+        custom: []
+        name: origin
+        description: 'Filter shipments by origin city.'
+        required: false
+        example: London
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      destination:
+        custom: []
+        name: destination
+        description: 'Filter shipments by destination city.'
+        required: false
+        example: Paris
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      origin: London
+      destination: Paris
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          [
+           {
+             "id": 1,
+             "tracking_code": "550e8400-e29b-41d4-a716-446655440000",
+             "origin": "London",
+             "destination": "Paris",
+             "weight_kg": 2500.5,
+             "cargo_type": "Standard",
+             "status": "In_Transit"
+           }
+          ]
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

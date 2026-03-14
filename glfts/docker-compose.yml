@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: glfts-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - glfts-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: glfts-webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - glfts-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: glfts-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-glfts}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-glfts}
+    ports:
+      - "3307:3306"
+    volumes:
+      - glfts-db-data:/var/lib/mysql
+    networks:
+      - glfts-network
+
+networks:
+  glfts-network:
+    driver: bridge
+
+volumes:
+  glfts-db-data:
